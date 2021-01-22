@@ -1,0 +1,14 @@
+{
+  "require": {
+    "ext-pdo": "*",
+    "ext-mbstring": "*"
+  },
+  "scripts": {
+    "serve": "php -S localhost:8801"
+  },
+  "autoload": {
+    "psr-4": {
+      "TaskApp\\": "src/"
+    }
+  }
+}
