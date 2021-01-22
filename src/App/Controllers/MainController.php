@@ -1,6 +1,5 @@
 <?php
 
-
 namespace TaskApp\App\Controllers;
 
 use TaskApp\App\Model\Sales;
@@ -8,19 +7,66 @@ use TaskApp\Helpers;
 
 class MainController
 {
-    /**
-     * @param Sales $sales
-     * @return string
-     */
-    public function index(Sales $sales): string
-    {
-        /* Загружаем csv данные в базу */
-        $sales->loadCSV('data.csv');
-        /* Выбираем случайную запись и меняем его статус*/
-        $random = $sales->random();
-        /* Достаем все записи */
-        $list = $sales->list();
+    private Sales $sales;
 
-        return Helpers::view('home.php', compact('random', 'list'));
+    /**
+     * MainController constructor.
+     * @param Sales $sales
+     */
+    public function __construct(Sales $sales)
+    {
+        $this->sales = $sales;
+        // Загружаем csv данные в базу
+        $this->sales->loadCSV('data.csv');
+    }
+
+    public function getRandom()
+    {
+        echo Helpers::jsonResponse(
+            array_merge(
+                $this->sales->getResponseMessage(),
+                $this->sales->random()
+            ), 200
+        );
+    }
+
+    public function getListSales()
+    {
+        echo Helpers::jsonResponse(
+            array_merge(
+                $this->sales->getResponseMessage(),
+                $this->sales->list()
+            ), 200
+        );
+    }
+
+    public function links()
+    {
+        echo Helpers::jsonResponse(
+            array_merge(
+                $this->sales->getResponseMessage(),
+                $this->sales->links()
+            ), 200
+        );
+    }
+
+    public function getSale(int $id)
+    {
+        echo Helpers::jsonResponse(
+            array_merge(
+                $this->sales->getResponseMessage(),
+                $this->sales->show($id)
+            ), 200
+        );
+    }
+
+    public function delete(int $id = 17)
+    {
+        echo Helpers::jsonResponse(
+            array_merge(
+                $this->sales->getResponseMessage(),
+                $this->sales->delete($id)
+            ), 200
+        );
     }
 }

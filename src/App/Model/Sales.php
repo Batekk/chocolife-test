@@ -49,20 +49,53 @@ class Sales extends QueryBuilder
     }
 
     /**
+     * Достаем рандомную запись
+     * меняем статус по условию
      * @return array
      */
     public function random(): array
     {
         $sale = $this->selectRandom();
         $sale['status'] = ($sale['status'] === 'Off') ? 'On' : 'Off';
-        return $sale;
+        return ['content' => $sale];
     }
 
     /**
+     * Достаем весь список записей
+     * и присваиваем slug
      * @return array
      */
     public function list(): array
     {
-        return Helpers::addSlug($this->all());
+        return ['content' => Helpers::slug($this->all())];
+    }
+
+    /**
+     * Достаем все записи
+     * только с name и slug
+     * @return array
+     */
+    public function links(): array
+    {
+        return ['content' => Helpers::slug($this->field('name'))];
+    }
+
+    /**
+     * Достаем определенную запись по id
+     * @param $id
+     * @return array
+     */
+    public function show($id)
+    {
+        return ['content' => $this->find($id)];
+    }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function delete($id)
+    {
+        return ['deleted' => $this->delete($id)];
     }
 }

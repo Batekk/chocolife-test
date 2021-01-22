@@ -1,5 +1,6 @@
 <?php
 
+
 namespace TaskApp\Database;
 
 use PDO;
@@ -12,12 +13,35 @@ class QueryBuilder
     private PDO $pdo;
 
     /**
+     * @var bool
+     */
+    private $responseMessage = [
+        'table' => 'Таблицы не существует'
+    ];
+
+    /**
      * QueryBuilder constructor.
      * @param PDO $pdo
      */
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
+    }
+
+    /**
+     * @param $msg
+     */
+    public function setResponseMessage($msg)
+    {
+        $this->responseMessage = $msg;
+    }
+
+    /**
+     * @return bool|string
+     */
+    public function getResponseMessage()
+    {
+        return $this->responseMessage;
     }
 
     /**
@@ -42,14 +66,18 @@ class QueryBuilder
         )';
     }
 
-    /* Создаем Таблицу */
+    /**
+     * Создаем Таблицу
+     */
     public function createTable(): void
     {
         try {
             $st = $this->pdo->prepare($this->salesTable());
             $st->execute();
         } catch (\PDOException $e) {
-            echo 'Таблица ' . $this->tableName() . ' уже существует!';
+            $this->setResponseMessage(
+                ['table' => 'Таблица ' . $this->tableName() . ' уже существует!']
+            );
         }
     }
 
@@ -75,6 +103,7 @@ class QueryBuilder
     {
         $st = $this->pdo->prepare('SELECT * FROM ' . $this->tableName() . ' ORDER BY RAND() LIMIT 1');
         $st->execute();
+
         return $st->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -85,6 +114,40 @@ class QueryBuilder
     {
         $st = $this->pdo->prepare('SELECT * FROM ' . $this->tableName());
         $st->execute();
+
         return $st->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * @param string $field
+     * @return array
+     */
+    public function field(string $field): array
+    {
+        $st = $this->pdo->prepare('SELECT ' . $field . ' FROM ' . $this->tableName());
+        $st->execute();
+
+        return $st->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * @param int $id
+     * @return mixed
+     */
+    public function find(int $id)
+    {
+        $st = $this->pdo->prepare('SELECT * FROM ' . $this->tableName() . ' WHERE id = ?');
+        $st->execute([$id]);
+
+        return $st->fetch(PDO::FETCH_ASSOC);
+    }
+
+
+    public function delete(int $id)
+    {
+        $st = $this->pdo->prepare('DELETE FROM ' . $this->tableName() . ' WHERE id = ?');
+        $st->execute([$id]);
+
+        return true;
     }
 }

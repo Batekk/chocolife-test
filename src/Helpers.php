@@ -5,6 +5,7 @@ namespace TaskApp;
 class Helpers
 {
     /**
+     * Путь до файла
      * @param string $fileName
      * @return string
      */
@@ -14,6 +15,7 @@ class Helpers
     }
 
     /**
+     * Проверка на присуствие файла
      * @param string $fileName
      * @return string
      */
@@ -23,6 +25,7 @@ class Helpers
     }
 
     /**
+     * Парсинг csv
      * @param string $fileName
      * @return array
      */
@@ -41,7 +44,6 @@ class Helpers
         } else {
             echo 'Файла нет';
         }
-        return [];
     }
 
     /**
@@ -126,7 +128,7 @@ class Helpers
      * @param array $sales
      * @return array
      */
-    public static function addSlug(array $sales): array
+    public static function slug(array $sales): array
     {
         $result = [];
         foreach ($sales as $sale) {
@@ -136,5 +138,33 @@ class Helpers
             $result[] = $sale;
         }
         return $result;
+    }
+
+    /**
+     * @param null $message
+     * @param int $code
+     * @return false|string
+     */
+    public static function jsonResponse($message = null, $code = 200)
+    {
+        header_remove();
+        http_response_code($code);
+        header("Cache-Control: no-transform,public,max-age=300,s-maxage=900");
+        header('Content-Type: application/json');
+
+        $status = array(
+            200 => '200 OK',
+            400 => '400 Bad Request',
+            422 => 'Unprocessable Entity',
+            500 => '500 Internal Server Error'
+        );
+
+        header('Status: ' . $status[$code]);
+
+        /* Возвращаем декодированный json, bool $code */
+        return json_encode(array(
+            'status' => $code < 300,
+            'message' => $message
+        ));
     }
 }

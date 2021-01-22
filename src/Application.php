@@ -2,7 +2,6 @@
 
 namespace TaskApp;
 
-use TaskApp\App\Controllers\MainController;
 use TaskApp\App\Model\Sales;
 use TaskApp\Database\DB;
 
@@ -14,14 +13,14 @@ class Application
     private array $storage = [];
 
     /**
-     * Запуск приложение
+     * Запуск нашего приложения
      *
      * @return void
      */
     public function run()
     {
         $this->bindParams();
-        $this->callAction(new MainController());
+        $this->callAction(new Router());
     }
 
     /**
@@ -51,19 +50,17 @@ class Application
      * @param $name
      * @return array|object
      */
-    private function getStorage(string $name)
+    public function getStorage(string $name)
     {
         return $this->storage[$name];
     }
 
     /**
-     * @param MainController $mainController
+     * @param Router $router
      * @return string
      */
-    private function callAction(MainController $mainController): string
+    private function callAction(Router $router)
     {
-        return $mainController->index(
-            $this->getStorage('sales')
-        );
+        $router->load($this);
     }
 }

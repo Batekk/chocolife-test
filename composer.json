@@ -1,7 +1,8 @@
 {
   "require": {
     "ext-pdo": "*",
-    "ext-mbstring": "*"
+    "ext-mbstring": "*",
+    "ext-json": "*"
   },
   "scripts": {
     "serve": "php -S localhost:8801"
